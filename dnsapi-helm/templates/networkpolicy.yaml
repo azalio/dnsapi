@@ -1,0 +1,21 @@
+{{- if .Values.networkPolicy.enabled }}
+---
+apiVersion: "crd.projectcalico.org/v1"
+kind: NetworkPolicy
+metadata:
+  name: default.allow-to-dnsapi-{{ include "dnsapi.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector: app.kubernetes.io/instance == 'dnsapi'
+  order: 10
+  types:
+  - Ingress
+  Ingress:
+  - action: Allow
+    protocol: TCP
+    source:
+      selector: app == 'aaa'
+    destination:
+      ports:
+      - 8080
+{{ end }}
